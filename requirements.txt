@@ -1,0 +1,4 @@
+fastapi
+typing
+psycpg2
+sqlalchemy
