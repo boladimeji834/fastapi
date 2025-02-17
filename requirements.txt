@@ -2,3 +2,6 @@ fastapi
 typing
 psycpg2
 sqlalchemy
+email-validator
+passlib
+bcrypt

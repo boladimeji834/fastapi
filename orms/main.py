@@ -2,8 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models
 from database import engine, SessionLocal
-from schema import PostBase
+import schemas
 from fastapi import HTTPException, status
+from utils import hash
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -30,7 +31,7 @@ def delete_post(db: Session = Depends(get_db)):
 
 # api to add a new post to the database 
 @app.post("/post")
-async def add_post(post: PostBase, db: Session = Depends(get_db)): 
+async def add_post(post: schemas.PostBase, db: Session = Depends(get_db)): 
     new_post = models.Post(title=post.title, content=post.content, published=post.published)
     db.add(new_post)
     db.commit()
@@ -53,7 +54,7 @@ async def delete_post(id: int, db: Session = Depends(get_db)):
 
 # api to updata a post
 @app.put("/post/{id}")
-async def update_post(id: int, post: PostBase, db: Session = Depends(get_db)): 
+async def update_post(id: int, post: schemas.PostBase, db: Session = Depends(get_db)): 
     query_post = db.query(models.Post).filter(models.Post.id == id)
 
     if query_post.first() == None: 
@@ -64,4 +65,15 @@ async def update_post(id: int, post: PostBase, db: Session = Depends(get_db)):
         "message": "post successfully updated", 
         "post": query_post.first()
     }
+
+# api to create a new user and add it to the database 
+@app.post("/user", status_code=200, response_model=schemas.UserOUt)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)): 
+    hashed_pwd = hash(user.password)
+    user.password = hashed_pwd
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return user.dict()
 
