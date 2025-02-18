@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import models, schemas, utils
 from database import engine
-from router import posts, users  # Fixed import
+from router import posts, users, auth # Fixed import
 
 models.Base.metadata.create_all(bind=engine)  # Remove this if using Alembic
 
@@ -10,6 +10,8 @@ app = FastAPI()
 
 app.include_router(posts.router)
 app.include_router(users.router)
+app.include_router(auth.router)
+
 
 
 # Dependency for database session

@@ -15,7 +15,7 @@ router = APIRouter()
 # api to create a new user and add it to the database 
 @router.post("/user", status_code=200, response_model=schemas.UserOUt)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)): 
-    hashed_pwd = hash(user.password)
+    hashed_pwd = utils.hash(user.password)
     user.password = hashed_pwd
     new_user = models.User(**user.dict())
     db.add(new_user)
