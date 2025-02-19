@@ -20,7 +20,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class UserOUt(BaseModel): 
+class UserOut(BaseModel): 
     email: EmailStr
 
 class UserLogin(BaseModel): 

@@ -2,6 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db  # Use absolute import
 import schemas, utils, models  # Use absolute imports
+from typing import List
 
 router = APIRouter()
 
@@ -9,11 +10,16 @@ router = APIRouter()
 
 router = APIRouter()
 
-
+# home route
+@router.get("/")
+async def home(): 
+    return {
+        "message": "welcome home!"
+    }
 
 
 # api to create a new user and add it to the database 
-@router.post("/user", status_code=200, response_model=schemas.UserOUt)
+@router.post("/user", status_code=200, response_model=schemas.UserOut)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)): 
     hashed_pwd = utils.hash(user.password)
     user.password = hashed_pwd
@@ -22,3 +28,10 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return user.dict()
+
+
+@router.get("/users")
+async def get_users(db: Session = Depends(get_db)): 
+    users = db.query(models.User).all()
+    
+    return users
